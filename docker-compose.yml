@@ -1,0 +1,145 @@
+version: '3.8'
+
+services:
+  api_gateway:
+    build: ./api_gateway
+    ports:
+      - "8080:8080"
+    depends_on:
+      - player_management
+      - room_management
+      - challenge_system
+      - log_collector
+      - payment_system
+
+  player_management:
+    build: ./player_management
+    ports:
+      - "8081:8080"
+    environment:
+      - DB_HOST=player_db
+      - DB_USER=postgres
+      - DB_PASSWORD=password
+      - DB_NAME=playerdb
+      - DB_PORT=5432
+    depends_on:
+      - player_db
+
+  room_management:
+    build: ./room_management
+    ports:
+      - "8082:8080"
+    environment:
+      - DB_HOST=room_db
+      - DB_USER=postgres
+      - DB_PASSWORD=password
+      - DB_NAME=roomdb
+      - DB_PORT=5432
+    depends_on:
+      - room_db
+
+  challenge_system:
+    build: ./challenge_system
+    ports:
+      - "8083:8080"
+    environment:
+      - DB_HOST=challenge_db
+      - DB_USER=postgres
+      - DB_PASSWORD=password
+      - DB_NAME=challengedb
+      - DB_PORT=5432
+    depends_on:
+      - challenge_db
+
+  log_collector:
+    build: ./log_collector
+    ports:
+      - "8084:8080"
+    environment:
+      - DB_HOST=log_db
+      - DB_USER=postgres
+      - DB_PASSWORD=password
+      - DB_NAME=logdb
+      - DB_PORT=5432
+    depends_on:
+      - log_db
+
+  payment_system:
+    build: ./payment_system
+    ports:
+      - "8085:8080"
+    environment:
+      - DB_HOST=payment_db
+      - DB_USER=postgres
+      - DB_PASSWORD=password
+      - DB_NAME=paymentdb
+      - DB_PORT=5432
+    depends_on:
+      - payment_db
+
+  player_db:
+    image: postgres:13
+    ports:
+      - "5432:5432"
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=password
+      - POSTGRES_DB=playerdb
+    volumes:
+      - player_data:/var/lib/postgresql/data
+
+  room_db:
+    image: postgres:13
+    ports:
+      - "5433:5432"
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=password
+      - POSTGRES_DB=roomdb
+    volumes:
+      - room_data:/var/lib/postgresql/data
+
+  challenge_db:
+    image: postgres:13
+    ports:
+      - "5434:5432"
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=password
+      - POSTGRES_DB=challengedb
+    volumes:
+      - challenge_data:/var/lib/postgresql/data
+
+  log_db:
+    image: postgres:13
+    ports:
+      - "5435:5432"
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=password
+      - POSTGRES_DB=logdb
+    volumes:
+      - log_data:/var/lib/postgresql/data
+
+  payment_db:
+    image: postgres:13
+    ports:
+      - "5436:5432"
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=password
+      - POSTGRES_DB=paymentdb
+    volumes:
+      - payment_data:/var/lib/postgresql/data
+
+volumes:
+  player_data:
+  room_data:
+  challenge_data:
+  log_data:
+  payment_data:
+
+
+networks:
+  default:
+    driver: bridge
